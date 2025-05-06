@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = "20250429.0"
 
   # Change the hostname with the login of someone
-  config.vm.hostname = "pioupia"
+  config.vm.hostname = "pioupiaS"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -66,7 +66,10 @@ Vagrant.configure("2") do |config|
   #
   #   # Customize the amount of memory on the VM:
      vb.memory = 512
-     vb.cpu = 1
+     vb.cpus = 1
+
+     # Set the machine name with the name of someone of the team
+     vb.name = "pioupia"
    end
   #
   # View the documentation for the provider you are using for more

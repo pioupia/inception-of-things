@@ -9,16 +9,34 @@ Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
- 
-  # Define
+ config.vm.box = "debian/jessie64"
+  config.vm.box_version = "8.11.1"
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "debian/jessie64"
-  config.vm.box_version = "8.11.1"
 
   # Change the hostname with the login of someone
-  config.vm.hostname = "pioupiaS"
+  config.vm.define "pioupiaS" do |server|
+    server.vm.hostname = "pioupiaS"
+
+    server.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--name", "pioupiaS"]
+      vb.gui = true
+      vb.memory = 512
+      vb.cpus = 1
+    end
+  end
+  
+  config.vm.define "pioupiaSW" do |worker|
+    worker.vm.hostname = "pioupiaSW"
+    
+    worker.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--name", "pioupiaSW"]
+      vb.gui = true
+      vb.memory = 512
+      vb.cpus = 1
+    end
+  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -62,17 +80,6 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-   config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-     vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-     vb.memory = 512
-     vb.cpus = 1
-
-     # Set the machine name with the name of someone of the team
-     vb.name = "pioupia"
-   end
   #
   # View the documentation for the provider you are using for more
   # information on available options.

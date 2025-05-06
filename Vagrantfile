@@ -9,11 +9,13 @@ Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
+ 
+  # Define
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "centos/stream10"
-  config.vm.box_version = "20250429.0"
+  config.vm.box = "debian/jessie64"
+  config.vm.box_version = "8.11.1"
 
   # Change the hostname with the login of someone
   config.vm.hostname = "pioupiaS"
@@ -62,7 +64,7 @@ Vagrant.configure("2") do |config|
   #
    config.vm.provider "virtualbox" do |vb|
   #   # Display the VirtualBox GUI when booting the machine
-     vb.gui = false
+     vb.gui = true
   #
   #   # Customize the amount of memory on the VM:
      vb.memory = 512

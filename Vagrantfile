@@ -9,8 +9,8 @@ Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
- config.vm.box = "debian/jessie64"
-  config.vm.box_version = "8.11.1"
+  config.vm.box = "debian/bookworm64"
+  config.vm.box_version = "12.20250126.1"
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
@@ -20,10 +20,9 @@ Vagrant.configure("2") do |config|
     server.vm.hostname = "pioupiaS"
 
     server.vm.provider "virtualbox" do |vb|
-      vb.customize ["modifyvm", :id, "--name", "pioupiaS"]
-      vb.gui = true
       vb.memory = 512
       vb.cpus = 1
+      vb.name = "pioupiaS"
     end
   end
   
@@ -31,10 +30,9 @@ Vagrant.configure("2") do |config|
     worker.vm.hostname = "pioupiaSW"
     
     worker.vm.provider "virtualbox" do |vb|
-      vb.customize ["modifyvm", :id, "--name", "pioupiaSW"]
-      vb.gui = true
       vb.memory = 512
       vb.cpus = 1
+      vb.name = "pioupiaSW"
     end
   end
 

@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
   # Change the hostname with the login of someone
   config.vm.define "pioupiaS" do |server|
     server.vm.hostname = "pioupiaS"
+    server.vm.network "private_network", ip: "192.168.56.110", virtualbox__intnet: true
 
     server.vm.provider "virtualbox" do |vb|
       vb.memory = 512
@@ -28,7 +29,8 @@ Vagrant.configure("2") do |config|
   
   config.vm.define "pioupiaSW" do |worker|
     worker.vm.hostname = "pioupiaSW"
-    
+    worker.vm.network "private_network", ip: "192.168.56.111", virtualbox__intnet: true
+
     worker.vm.provider "virtualbox" do |vb|
       vb.memory = 512
       vb.cpus = 1

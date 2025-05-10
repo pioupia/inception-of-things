@@ -20,8 +20,8 @@ Vagrant.configure("2") do |config|
 SHELL
 
     server.vm.provider "virtualbox" do |vb|
-      vb.memory = 512
-      vb.cpus = 1
+      vb.memory = 2048
+      vb.cpus = 2
       vb.name = "pioupiaS"
     end
   end

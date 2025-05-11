@@ -36,7 +36,7 @@ SHELL
 SHELL
 
     worker.vm.provider "virtualbox" do |vb|
-      vb.memory = 512
+      vb.memory = 1024
       vb.cpus = 1
       vb.name = "pioupiaSW"
     end

@@ -10,8 +10,9 @@ Vagrant.configure("2") do |config|
 
   # Provisionning with shell on both server and worker
   config.vm.provision "shell", inline: <<-SHELL
-      sudo wget -O /usr/local/bin/k3s https://github.com/k3s-io/k3s/releases/download/v1.26.5+k3s1/k3s
-      sudo chmod a+x /usr/local/bin/k3s
+      sudo wget -qO /usr/local/bin/k3s https://github.com/k3s-io/k3s/releases/download/v1.26.5+k3s1/k3s
+      sudo wget -qO /usr/local/bin/kubectl https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl
+      sudo chmod +x /usr/local/bin/k3s /usr/local/bin/kubectl
 SHELL
 
   # Change the hostname with the login of someone
@@ -20,8 +21,7 @@ SHELL
     server.vm.network "private_network", ip: "192.168.56.110"
 
     server.vm.provision "shell", inline: <<-SHELL
-      echo "test" > /var/lib/rancher/k3s/server/node-token
-      K3S_KUBECONFIG_MODE="644" sudo k3s server
+      sudo k3s server --token=test --cluster-init -i 192.168.56.110 &
 SHELL
 
     server.vm.provider "virtualbox" do |vb|
@@ -36,8 +36,7 @@ SHELL
     worker.vm.network "private_network", ip: "192.168.56.111"
 
     worker.vm.provision "shell", inline: <<-SHELL
-    # sudo cat /var/lib/rancher/k3s/server/node-token (on server)
-    curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.110:6443 K3S_TOKEN='test' sh -
+    sudo k3s agent --token test --server https://192.168.56.110:6443 -i 192.168.56.111 &
 SHELL
 
     worker.vm.provider "virtualbox" do |vb|

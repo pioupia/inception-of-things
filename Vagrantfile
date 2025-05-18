@@ -22,6 +22,11 @@ SHELL
 
     server.vm.provision "shell", inline: <<-SHELL
       sudo k3s server --token=test --cluster-init -i 192.168.56.110 &
+      mkdir -p "$HOME/.kube"
+      sudo mkdir -p /root/.kube
+      sudo cp /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config"
+      sudo cp /etc/rancher/k3s/k3s.yaml "/root/.kube/config"
+      sudo chown "$USER" $HOME/.kube/config
 SHELL
 
     server.vm.provider "virtualbox" do |vb|

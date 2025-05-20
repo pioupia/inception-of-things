@@ -13,6 +13,8 @@ Vagrant.configure("2") do |config|
       sudo wget -qO /usr/local/bin/k3s https://github.com/k3s-io/k3s/releases/download/v1.26.5+k3s1/k3s
       sudo wget -qO /usr/local/bin/kubectl https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl
       sudo chmod +x /usr/local/bin/k3s /usr/local/bin/kubectl
+      sudo touch /etc/systemd/system/k3s.service.env
+      sudo chmod u=rw,g=,o= /etc/systemd/system/k3s.service.env
 SHELL
 
   # Change the hostname with the login of someone
@@ -20,8 +22,15 @@ SHELL
     server.vm.hostname = "pioupiaS"
     server.vm.network "private_network", ip: "192.168.56.110"
 
+    server.vm.provision "file", source: "./services/k3s_server.service", destination: "/tmp/k3s.service"
+
     server.vm.provision "shell", inline: <<-SHELL
-      sudo k3s server --token=test --cluster-init -i 192.168.56.110 &
+      sudo mv "/tmp/k3s.service" /etc/systemd/system/k3s.service
+
+      sudo -- bash -c 'echo "SERVER_TOKEN=test" >> /etc/systemd/system/k3s.service.env'
+      sudo -- bash -c 'echo "SERVER_IP=192.168.56.110" >> /etc/systemd/system/k3s.service.env'
+
+      sudo systemctl start k3s
       mkdir -p "$HOME/.kube"
       sudo mkdir -p /root/.kube
       sudo cp /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config"
@@ -40,8 +49,21 @@ SHELL
     worker.vm.hostname = "pioupiaSW"
     worker.vm.network "private_network", ip: "192.168.56.111"
 
+    worker.vm.provision "file", source: "./services/k3s_worker.service", destination: "/tmp/k3s.service"
+
     worker.vm.provision "shell", inline: <<-SHELL
-    sudo k3s agent --token test --server https://192.168.56.110:6443 -i 192.168.56.111 &
+      sudo mv "/tmp/k3s.service" /etc/systemd/system/k3s.service
+
+      sudo -- bash -c 'echo "SERVER_TOKEN=test" >> /etc/systemd/system/k3s.service.env'
+      sudo -- bash -c 'echo "SERVER_URI=https://192.168.56.110:6443" >> /etc/systemd/system/k3s.service.env'
+      sudo -- bash -c 'echo "WORKER_IP=192.168.56.111" >> /etc/systemd/system/k3s.service.env'
+
+      sudo systemctl start k3s
+      mkdir -p "$HOME/.kube"
+      sudo mkdir -p /root/.kube
+      sudo cp /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config"
+      sudo cp /etc/rancher/k3s/k3s.yaml "/root/.kube/config"
+      sudo chown "$USER" $HOME/.kube/config
 SHELL
 
     worker.vm.provider "virtualbox" do |vb|

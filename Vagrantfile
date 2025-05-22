@@ -29,18 +29,13 @@ SHELL
 
       sudo -- bash -c 'echo "SERVER_TOKEN=test" >> /etc/systemd/system/k3s.service.env'
       sudo -- bash -c 'echo "SERVER_IP=192.168.56.110" >> /etc/systemd/system/k3s.service.env'
-
-      sudo systemctl start k3s
-      mkdir -p "$HOME/.kube"
-      sudo mkdir -p /root/.kube
-      sudo cp /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config"
-      sudo cp /etc/rancher/k3s/k3s.yaml "/root/.kube/config"
-      sudo chown "$USER" $HOME/.kube/config
 SHELL
 
+    server.vm.provision "shell", path: "./scripts/start_and_config.sh"
+
     server.vm.provider "virtualbox" do |vb|
-      vb.memory = 2048
-      vb.cpus = 2
+      vb.memory = 1024
+      vb.cpus = 1
       vb.name = "pioupiaS"
     end
   end
@@ -57,14 +52,9 @@ SHELL
       sudo -- bash -c 'echo "SERVER_TOKEN=test" >> /etc/systemd/system/k3s.service.env'
       sudo -- bash -c 'echo "SERVER_URI=https://192.168.56.110:6443" >> /etc/systemd/system/k3s.service.env'
       sudo -- bash -c 'echo "WORKER_IP=192.168.56.111" >> /etc/systemd/system/k3s.service.env'
-
-      sudo systemctl start k3s
-      mkdir -p "$HOME/.kube"
-      sudo mkdir -p /root/.kube
-      sudo cp /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config"
-      sudo cp /etc/rancher/k3s/k3s.yaml "/root/.kube/config"
-      sudo chown "$USER" $HOME/.kube/config
 SHELL
+
+    worker.vm.provision "shell", path: "./scripts/start_and_config.sh"
 
     worker.vm.provider "virtualbox" do |vb|
       vb.memory = 1024

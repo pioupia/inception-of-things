@@ -15,6 +15,8 @@ if [ -f "/vagrant/shared/k3s.yaml" ]; then
 
   sudo sed "s/127.0.0.1/$SERVER_IP/g" /vagrant/shared/k3s.yaml > /home/vagrant/.kube/config
 
+  sudo rm /vagrant/shared/k3s.yaml
+
   sudo chmod 400 /home/vagrant/.kube/config
 
   sudo cp /home/vagrant/.kube/config /root/.kube/config
@@ -27,6 +29,10 @@ else
 fi
 
 if [ -f "/vagrant/shared/token" ]; then
+  sudo cp /vagrant/shared/token /root/.token
+  sudo chmod 400 /root/.token
+  sudo rm /vagrant/shared/token
+
   sudo systemctl start k3s
 else
   echo "Shared k3s token file not found. Please ensure the server is running and the file is shared." 1>&2

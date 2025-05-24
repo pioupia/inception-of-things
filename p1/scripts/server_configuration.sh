@@ -7,7 +7,6 @@ mkdir -p "$KUBECONFIG_PATH"
 sudo mkdir -p /root/.kube
 
 # Share k3s config to other VM
-# https://flemmix.ws/vf/24930-rick-et-morty-saison-6.html
 if [ -f '/etc/rancher/k3s/k3s.yaml' ]; then
   sudo cp /etc/rancher/k3s/k3s.yaml "${KUBECONFIG_PATH}/config"
   sudo cp /etc/rancher/k3s/k3s.yaml "/root/.kube/config"

@@ -29,6 +29,5 @@ ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/k3s \
     server \
-	--token=${SERVER_TOKEN} \
 	--cluster-init \
 	-i ${SERVER_IP}

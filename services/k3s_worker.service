@@ -29,6 +29,6 @@ ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/k3s \
     agent \
-	--token ${SERVER_TOKEN} \
 	-i ${WORKER_IP} \
-	--server ${SERVER_URI}
+	--server ${SERVER_URI} \
+	--token-file /vagrant/shared/token

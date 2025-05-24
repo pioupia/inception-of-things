@@ -21,13 +21,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant/shared", create: true, type: "virtualbox"
 
   # Provisionning with shell on both server and worker
-  config.vm.provision "shell", inline: <<-SHELL
-      sudo wget -qO /usr/local/bin/k3s https://github.com/k3s-io/k3s/releases/download/v1.26.5+k3s1/k3s
-      sudo wget -qO /usr/local/bin/kubectl https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl
-      sudo chmod +x /usr/local/bin/k3s /usr/local/bin/kubectl
-      sudo touch /etc/systemd/system/k3s.service.env
-      sudo chmod u=rw,g=,o= /etc/systemd/system/k3s.service.env
-SHELL
+  config.vm.provision "shell", path: "./scripts/installer.sh"
 
   # Change the hostname with the login of someone
   config.vm.define "pioupiaS" do |server|

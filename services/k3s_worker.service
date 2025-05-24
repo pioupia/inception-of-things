@@ -31,4 +31,4 @@ ExecStart=/usr/local/bin/k3s \
     agent \
 	-i ${WORKER_IP} \
 	--server ${SERVER_URI} \
-	--token-file /vagrant/shared/token
+	--token-file /root/.token

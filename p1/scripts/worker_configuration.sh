@@ -34,6 +34,7 @@ if [ -f "/vagrant/shared/token" ]; then
   sudo rm /vagrant/shared/token
 
   sudo systemctl start k3s
+  sudo systemctl enable k3s
 else
   echo "Shared k3s token file not found. Please ensure the server is running and the file is shared." 1>&2
   exit 1

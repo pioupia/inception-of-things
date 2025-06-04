@@ -1,9 +1,12 @@
 # -*- mode: ruby -*-
-# vi: set ft=ruby :
 
+# Machines configurations
 SERVICES = {
   'server' => {
-    ip: '192.168.56.110'
+    ip: '192.168.56.110',
+  },
+  'worker' => {
+    ip: '192.168.56.111',
   }
 }
 
@@ -12,35 +15,29 @@ SERVICES = {
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
-
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://vagrantcloud.com/search.
   config.vm.box = "debian/bookworm64"
-  confix.vm.box_version = "12.20250126.1"
+  config.vm.box_version = "12.20250126.1"
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = 1024
-    vb.cpus = 1
-    vb.name = "pioupiaS"
-  end
-
-  config.vm.provision "file", source: "./confs/k3s_server.service", destination: "/etc/systemd/system/k3s.service"
-
-  # Provisionning shell for k3s installation
+  # Provisionning with shell on both server and worker
   config.vm.provision "shell", path: "./scripts/installer.sh"
 
-  config.vm.provision "shell", inline: <<-EOF
-    sudo -- bash -c 'echo "SERVER_IP=#{SERVICES['server'][:ip]}" >> /etc/systemd/system/k3s.service.env'
+  # Change the hostname with the login of someone
+  config.vm.define "pioupiaS" do |server|
+    server.vm.hostname = "pioupiaS"
+    server.vm.network "private_network", ip: SERVICES['server'][:ip]
 
-    sudo systemctl start k3s
-    sudo systemctl enable k3s
-EOF
-  
-  # Provisionnel shell for pod setup
+    server.vm.provision "file", source: "./confs/k3s_server.service", destination: "/etc/systemd/system/k3s.service"
 
-  # Provisionning shell for k3s ingress routing
+    server.vm.provision "shell", inline: <<-SHELL
+      sudo -- bash -c 'echo "SERVER_IP=#{SERVICES['server'][:ip]}" >> /etc/systemd/system/k3s.service.env'
+      sudo systemctl start k3s
+      sudo systemctl enable k3s
+SHELL
 
+    server.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+      vb.cpus = 1
+      vb.name = "pioupiaS"
+    end
+  end
 end

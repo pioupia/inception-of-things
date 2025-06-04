@@ -1,0 +1,46 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+SERVICES = {
+  'server' => {
+    ip: '192.168.56.110'
+  }
+}
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "debian/bookworm64"
+  confix.vm.box_version = "12.20250126.1"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 1024
+    vb.cpus = 1
+    vb.name = "pioupiaS"
+  end
+
+  config.vm.provision "file", source: "./confs/k3s_server.service", destination: "/etc/systemd/system/k3s.service"
+
+  # Provisionning shell for k3s installation
+  config.vm.provision "shell", path: "./scripts/installer.sh"
+
+  config.vm.provision "shell", inline: <<-EOF
+    sudo -- bash -c 'echo "SERVER_IP=#{SERVICES['server'][:ip]}" >> /etc/systemd/system/k3s.service.env'
+
+    sudo systemctl start k3s
+    sudo systemctl enable k3s
+EOF
+  
+  # Provisionnel shell for pod setup
+
+  # Provisionning shell for k3s ingress routing
+
+end

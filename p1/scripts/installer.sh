@@ -12,8 +12,6 @@ sudo chmod +x /usr/local/bin/k3s /usr/local/bin/kubectl
 
 if [ ! -f /etc/systemd/system/k3s.service.env ]; then
 	sudo touch /etc/systemd/system/k3s.service.env
-else
-	echo -n | sudo tee /etc/systemd/system/k3s.service.env
 fi
 
 sudo chmod 600 /etc/systemd/system/k3s.service.env

@@ -5,11 +5,17 @@ metadata:
   namespace: kube-system
 spec:
   valuesContent: |-
-    image:
-      repository: docker.io/library/traefik
-      tag: 3.3.5
-    ports:
-      web:
-        forwardedHeaders:
-          trustedIPs:
-            - 10.0.0.0/8
+    api:
+      enabled: true
+      dashboard: true
+      insecure: true
+    ingressRoute:
+      dashboard:
+        enabled: true
+        # We use a specific host to avoid conflicts with other apps
+        matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+        entryPoints: ["web"]
+    # Optional: If you want to see the logs to debug
+    logs:
+      general:
+        level: DEBUG

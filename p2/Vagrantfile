@@ -4,9 +4,6 @@
 SERVICES = {
   'server' => {
     ip: '192.168.56.110',
-  },
-  'worker' => {
-    ip: '192.168.56.111',
   }
 }
 
@@ -18,7 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "debian/bookworm64"
   config.vm.box_version = "12.20250126.1"
 
-  # Provisionning with shell on both server and worker
+  # Provisionning with shell on server
   config.vm.provision "shell", path: "./scripts/installer.sh"
 
   # Change the hostname with the login of someone
@@ -26,7 +23,8 @@ Vagrant.configure("2") do |config|
     server.vm.hostname = "pioupiaS"
     server.vm.network "private_network", ip: SERVICES['server'][:ip]
 
-    server.vm.provision "file", source: "./confs/k3s_server.service", destination: "/etc/systemd/system/k3s.service"
+    server.vm.provision "file", source: "./confs/k3s_server.service", destination: "/dev/shm/k3s.service"
+    server.vm.provision "shell", inline: "mv /dev/shm/k3s.service /etc/systemd/system/k3s.service"
 
     server.vm.provision "shell", inline: <<-SHELL
       sudo -- bash -c 'echo "SERVER_IP=#{SERVICES['server'][:ip]}" >> /etc/systemd/system/k3s.service.env'
@@ -34,9 +32,26 @@ Vagrant.configure("2") do |config|
       sudo systemctl enable k3s
 SHELL
 
+    server.vm.provision "shell", path: "./scripts/configuration.sh"
+
+    server.vm.provision "file", source: "./confs/traefik-config.yaml", destination: "/dev/shm/traefik-config.yaml"
+    server.vm.provision "shell", inline: "mv /dev/shm/traefik-config.yaml /var/lib/rancher/k3s/server/manifests"
+
+    # Upload apps configuration files
+    server.vm.provision "file", source: "./confs/app-one.yaml", destination: "/dev/shm/app-one.yaml"
+    server.vm.provision "file", source: "./confs/app-two.yaml", destination: "/dev/shm/app-two.yaml"
+    server.vm.provision "file", source: "./confs/app-three.yaml", destination: "/dev/shm/app-three.yaml"
+
+    server.vm.provision "shell", inline: <<-SHELL
+      kubectl apply -f /dev/shm/app-one.yaml
+      kubectl apply -f /dev/shm/app-two.yaml
+      kubectl apply -f /dev/shm/app-three.yaml
+SHELL
+
+
     server.vm.provider "virtualbox" do |vb|
-      vb.memory = 1024
-      vb.cpus = 1
+      vb.memory = 8192
+      vb.cpus = 6
       vb.name = "pioupiaS"
     end
   end

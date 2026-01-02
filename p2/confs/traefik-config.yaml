@@ -1,0 +1,21 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    api:
+      enabled: true
+      dashboard: true
+      insecure: true
+    ingressRoute:
+      dashboard:
+        enabled: true
+        # We use a specific host to avoid conflicts with other apps
+        matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+        entryPoints: ["web"]
+    # Optional: If you want to see the logs to debug
+    logs:
+      general:
+        level: DEBUG

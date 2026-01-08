@@ -17,6 +17,8 @@ p3/*
 !p3/confs
 !p3/scripts
 !p3/Vagrantfile
+!p3/start.sh
+!p3/README.md
 
 p1/confs/*
 p2/confs/*
@@ -24,7 +26,7 @@ p3/confs/*
 !p1/confs/*.service
 !p2/confs/*.service
 !p2/confs/*.yaml
-!p3/confs/*.service
+!p3/confs/*.yaml
 
 p1/scripts/*
 p2/scripts/*

@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: playground-expose
+  namespace: dev
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`gitops.com`)
+      priority: 1
+      services:
+        - name: playground
+          port: 8888
+  tls:
+    secretName: playground-selfsigned-cert-tls

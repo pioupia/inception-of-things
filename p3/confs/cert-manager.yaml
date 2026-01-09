@@ -1,0 +1,31 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-cert
+  namespace: cert-manager
+spec:
+  dnsNames:
+    - argocd.gitops.com
+  secretName: argo-selfsigned-cert-tls
+  issuerRef:
+    name: test-selfsigned
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: playground-cert
+  namespace: cert-manager
+spec:
+  dnsNames:
+    - gitops.com
+  secretName: playground-selfsigned-cert-tls
+  issuerRef:
+    name: test-selfsigned
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: test-selfsigned
+  namespace: cert-manager
+spec:
+  selfSigned: {}

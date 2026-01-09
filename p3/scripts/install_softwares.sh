@@ -39,8 +39,8 @@ function install_software() {
 
 function safe_namespace()
 {
-    k get ns "$1" 1>&2 2>/dev/null
-    if [ $? -eq 1 ]; then
+    kubectl get ns "$1" 1>&2 2>/dev/null
+    if [ $? -ne 0 ]; then
         kubectl create namespace "$1"
     fi
 }
@@ -84,9 +84,9 @@ function install_argocd()
         echo "Argocd was already installed"
     fi
 
-    expose_port
-
     argocd login --core
+
+    expose_port
 
     # Get the initial password:
     default_password="$(argocd admin initial-password -n argocd | head -1)"

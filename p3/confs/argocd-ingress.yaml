@@ -21,24 +21,4 @@ spec:
           port: 80
           scheme: h2c
   tls:
-    secretName: selfsigned-cert-tls
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: argocd-cert
-  namespace: argocd
-spec:
-  dnsNames:
-    - argocd.gitops.com
-  secretName: selfsigned-cert-tls
-  issuerRef:
-    name: test-selfsigned
----
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: test-selfsigned
-  namespace: argocd
-spec:
-  selfSigned: {}
+    secretName: argo-selfsigned-cert-tls

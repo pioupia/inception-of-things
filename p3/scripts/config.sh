@@ -13,6 +13,9 @@ function create_app()
 
 	# Sync with CLI the playground application
 	argocd app sync playground
+
+	# Define autosync of playground
+	argocd app set playground --sync-policy automated
 }
 
 function expose_port()

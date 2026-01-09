@@ -1,6 +1,6 @@
 function create_cluster()
 {
-	k3d cluster create gitops -p "8443:443@loadbalancer" -p "8080:80@loadbalancer"
+	k3d cluster create gitops -p "443:443@loadbalancer" -p "80:80@loadbalancer"
 }
 
 function create_app()

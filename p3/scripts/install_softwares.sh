@@ -37,10 +37,18 @@ function install_software() {
     wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 }
 
+function safe_namespace()
+{
+    k get ns "$1" 1>&2 2>/dev/null
+    if [ $? -eq 1 ]; then
+        kubectl create namespace "$1"
+    fi
+}
+
 function create_namespace()
 {
-    kubectl create namespace argocd
-    kubectl create namespace dev
+    safe_namespace argocd
+    safe_namespace dev
 
     # Change the current namespace
     kubectl config set-context --current --namespace=argocd
@@ -53,27 +61,32 @@ function install_argocd()
     # The -n will set the default namespace to argocd and apply the config file
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-    VERSION=$(curl -L -s https://raw.githubusercontent.com/argoproj/argo-cd/stable/VERSION)
-    wget -q -O /tmp/argocd-linux-amd64 'https://github.com/argoproj/argo-cd/releases/download/v$VERSION/argocd-linux-amd64'
-    wget -q -O /tmp/cli_checksums.txt 'https://github.com/argoproj/argo-cd/releases/download/v$VERSION/cli_checksums.txt'
+    if [ ! -f /usr/local/bin/argocd ]; then
+        VERSION=$(curl -L -s https://raw.githubusercontent.com/argoproj/argo-cd/stable/VERSION)
+        wget -q -O /tmp/argocd-linux-amd64 "https://github.com/argoproj/argo-cd/releases/download/v$VERSION/argocd-linux-amd64"
+        wget -q -O /tmp/cli_checksums.txt "https://github.com/argoproj/argo-cd/releases/download/v$VERSION/cli_checksums.txt"
 
-    pushd /tmp
-    sha256sum --ignore-missing -c cli_checksums.txt
-    if [ $? -ne 0 ]; then
-        echo -n "An error has occured during the installation of argocd. The integrity verification through sha256sum failed. Do you want to continue? [y/N] "
-        read -n1 res
+        pushd /tmp
+        sha256sum --ignore-missing -c cli_checksums.txt
+        if [ $? -ne 0 ]; then
+            echo -n "An error has occured during the installation of argocd. The integrity verification through sha256sum failed. Do you want to continue? [y/N] "
+            read -n1 res
 
-        if [ "$res" != "y" ] && [ "$res" != "Y" ]; then
-            exit 1
+            if [ "$res" != "y" ] && [ "$res" != "Y" ]; then
+                exit 1
+            fi
         fi
-    fi
-    popd
+        popd
 
-    sudo install -m 555 /tmp/argocd-linux-amd64 /usr/local/bin/argocd
-    mv /tmp/argocd-linux-amd64 /bin/argocd
-    rm /tmp/argocd-linux-amd64
+        sudo install -m 555 /tmp/argocd-linux-amd64 /usr/local/bin/argocd
+        rm /tmp/argocd-linux-amd64
+    else
+        echo "Argocd was already installed"
+    fi
 
     expose_port
+
+    argocd login --core
 
     # Get the initial password:
     default_password="$(argocd admin initial-password -n argocd | head -1)"

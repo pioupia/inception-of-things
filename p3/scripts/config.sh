@@ -5,11 +5,8 @@ function create_cluster()
 
 function create_app()
 {
-	mkdir -p /etc/rancher/k3s/
-	ln -s /root/.kube/config /etc/rancher/k3s/k3s.yaml
-
 	argocd app create playground \
-		--repo https://github.com/pioupia/pioupia-iot_app \
+		--repo https://github.com/pioupia/pioupia-iot_app.git \
 		--path . \
 		--dest-server https://kubernetes.default.svc \
 		--dest-namespace dev

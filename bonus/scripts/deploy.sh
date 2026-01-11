@@ -1,13 +1,5 @@
 function deploy_gitlab()
 {
-# 	helm repo add gitlab https://charts.gitlab.io/
-# 	helm repo update
-# 	helm upgrade --install gitlab gitlab/gitlab \
-#   --timeout 600s \
-#   --set global.hosts.domain=example.com \
-#   --set global.hosts.externalIP=10.10.10.10 \
-#   --set certmanager-issuer.email=me@example.com
-
 	helm pull gitlab/gitlab --untar
 
 	kubectl create namespace gitlab
@@ -20,3 +12,29 @@ function deploy_gitlab()
 
 	echo "127.0.0.1 gitlab.gitops.com" >> /etc/hosts
 }
+
+function delete_stuck_namespace()
+{
+	kubectl get namespace "$1" -o json \
+  | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" \
+  | kubectl replace --raw /api/v1/namespaces/$1/finalize -f -
+}
+
+function undeploy()
+{
+	# 1. Supprimer la release Helm
+	helm uninstall gitlab -n gitlab
+
+	# 2. Supprimer TOUTES les données (très important pour Postgres)
+	kubectl delete pvc --all -n gitlab
+
+	# 3. Attendre que les PVC disparaissent
+	sleep 10
+
+	# 4. Supprimer le reste pour éviter les conflits de secrets
+	kubectl delete secret --all -n gitlab
+	kubectl delete cm --all -n gitlab
+
+	delete_stuck_namespace gitlab
+}
+

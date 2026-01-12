@@ -143,7 +143,7 @@ global:
     apiVersion: ""
     configureCertmanager: false
     useNewIngressForCerts: false
-    provider: nginx
+    provider: traefik
     class: traefik
     annotations:
       kubenetes.io/ingress.class: "traefik"
@@ -1387,11 +1387,20 @@ gitlab:
       concurrency: 10
   ## https://docs.gitlab.com/charts/charts/gitlab/gitaly
     gitaly:
+      shell.concurrency:
+        - rpc: "/gitaly.SmartHTTPService/PostReceivePack"
+          max_per_repo: 3
+        - rpc: "/gitaly.SSHService/SSHUploadPack"
+          max_per_repo: 3
       cgroups.repositories.count: 2
       cgroups.mountpoint: /sys/fs/cgroup
       cgroups.hierarchyRoot: gitaly
       cgroups.memoryBytes: 500000
       cgroups.cpuShares: 512
+      extraEnv:
+        GITALY_COMMAND_SPAWN_MAX_PARALLEL: 2
+      securityContext:
+        fsGroupChangePolicy: "OnRootMismatch"
   ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-shell
   #   gitlab-shell:
   #     enabled: false

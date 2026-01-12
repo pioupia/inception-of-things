@@ -1,12 +1,20 @@
+function update_traefik_route()
+{
+	kubectl apply -f ./confs/traefik-values.yaml -n kube-system
+}
+
 function deploy_gitlab()
 {
+	helm repo add gitlab https://charts.gitlab.io/
+	helm repo update
+
 	helm pull gitlab/gitlab --untar
 
 	kubectl create namespace gitlab
 
 	kubectl apply -f ./confs/gitlab-cert.yaml
 
-	mv ./confs/gitab-values.yaml ./gitlab/values.yaml
+	cp ./confs/gitlab-values.yaml ./gitlab/values.yaml
 
 	helm install gitlab ./gitlab/ -n gitlab
 

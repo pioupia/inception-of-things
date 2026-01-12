@@ -12,5 +12,5 @@ initial_pass_gitlab="$(kubectl get secret gitlab-gitlab-initial-root-password -n
 install_gitlab_cli
 
 echo "=== Gitlab credentials ==="
-echo "Username: admin"
+echo "Username: root"
 echo "Password: $initial_pass_gitlab"

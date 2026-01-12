@@ -15,7 +15,7 @@ spec:
         matchRule: Host(`traefik.gitops.com`)
         entryPoints: ["web","websecure"]
     ports:
-      gitlab-ssh:
-        port: 22
+      gitlab-shell:
+        expose: true
+        port: 2222
         exposedPort: 22
-        protocol: TCP

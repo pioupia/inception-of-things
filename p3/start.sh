@@ -12,5 +12,8 @@ install_argocd
 
 create_app
 
+# Get the initial password:
+default_password="$(argocd admin initial-password -n argocd | head -1)"
+echo "=== ArgoCD credentials ==="
 echo "Username: admin"
 echo "Password: $default_password"

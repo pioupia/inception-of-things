@@ -87,8 +87,4 @@ function install_argocd()
     argocd login --core
 
     expose_port
-
-    # Get the initial password:
-    default_password="$(argocd admin initial-password -n argocd | head -1)"
-    export default_password
 }

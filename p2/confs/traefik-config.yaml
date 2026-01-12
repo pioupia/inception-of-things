@@ -12,7 +12,6 @@ spec:
     ingressRoute:
       dashboard:
         enabled: true
-        # We use a specific host to avoid conflicts with other apps
         matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
         entryPoints: ["web"]
     # Optional: If you want to see the logs to debug

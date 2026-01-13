@@ -21,6 +21,33 @@ function deploy_gitlab()
 	echo "127.0.0.1 gitlab.gitops.com" >> /etc/hosts
 }
 
+function update_argocd_dns()
+{
+	kubectl get configmap coredns -n kube-system -o yaml > configmap_coredns.yaml
+	head -4 configmap_coredns.yaml >> new_configmap_coredns.yaml
+	echo "        rewrite name gitlab.gitops.com gitlab-webservice-default.gitlab.svc.cluster.local" >> new_configmap_coredns.yaml
+	tail -n +5 configmap_coredns.yaml >> new_configmap_coredns.yaml
+
+	kubectl replace -n kube-system -f new_configmap_coredns.yaml
+
+	rm new_configmap_coredns.yaml configmap_coredns.yaml
+}
+
+function deploy_gitlab_on_argocd()
+{
+	argocd app create playground \
+		--repo http://gitlab.gitops.com:8181/root/iot_app.git \
+		--path . \
+		--dest-server https://kubernetes.default.svc \
+		--dest-namespace dev
+
+	# Sync with CLI the playground application
+	argocd app sync playground
+
+	# Define autosync of playground
+	argocd app set playground --sync-policy automated
+}
+
 function delete_stuck_namespace()
 {
 	kubectl get namespace "$1" -o json \

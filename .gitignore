@@ -2,11 +2,13 @@
 !p1/
 !p2/
 !p3/
+!bonus/
 !.gitignore
 
 p1/*
 p2/*
 p3/*
+bonus/*
 
 !p1/confs
 !p1/scripts
@@ -16,9 +18,12 @@ p3/*
 !p2/Vagrantfile
 !p3/confs
 !p3/scripts
-!p3/Vagrantfile
 !p3/start.sh
 !p3/README.md
+!bonus/confs
+!bonus/scripts
+!bonus/start.sh
+!bonus/README.md
 
 p1/confs/*
 p2/confs/*
@@ -27,6 +32,7 @@ p3/confs/*
 !p2/confs/*.service
 !p2/confs/*.yaml
 !p3/confs/*.yaml
+!bonus/confs/*.yaml
 
 p1/scripts/*
 p2/scripts/*
@@ -34,3 +40,4 @@ p3/scripts/*
 !p1/scripts/*.sh
 !p2/scripts/*.sh
 !p3/scripts/*.sh
+!bonus/scripts/*.sh

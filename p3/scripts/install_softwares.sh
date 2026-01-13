@@ -58,7 +58,7 @@ function install_argocd()
 {
     create_namespace
 
-    # The -n will set the default namespace to argocd and apply the config file
+    # Apply the config file to the argocd namespace
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
     if [ ! -f /usr/local/bin/argocd ]; then

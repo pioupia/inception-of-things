@@ -14,6 +14,8 @@ initial_pass_gitlab="$(kubectl get secret gitlab-gitlab-initial-root-password -n
 
 update_argocd_dns
 
+deploy_gitlab_on_argocd
+
 echo "=== Gitlab credentials ==="
 echo "Username: root"
 echo "Password: $initial_pass_gitlab"

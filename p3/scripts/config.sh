@@ -1,6 +1,6 @@
 function create_cluster()
 {
-	k3d cluster create gitops -p "443:443@loadbalancer" -p "80:80@loadbalancer"
+	k3d cluster create gitops -p "443:443@loadbalancer" -p "80:80@loadbalancer" -p "2222:22@loadbalancer"
 }
 
 function create_app()
@@ -30,6 +30,8 @@ function change_tls()
 
 	kubectl apply -f ./confs/cert-manager.yaml
 
+	# Change the argocd config map to add server.insecure property to true.
+	# This is a patch to let argocd run with TLS enabled, by allowing self-cert for the API
 	kubectl -n argocd get cm argocd-cmd-params-cm -o yaml | sed -e '$a\\ndata:\n  server.insecure: "true"\n' | kubectl replace -n argocd -f -
 
 	kubectl apply -n argocd -f ./confs/argocd-ingress.yaml

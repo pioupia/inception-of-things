@@ -15,57 +15,45 @@ SERVICES = {
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/bookworm64"
-  config.vm.box_version = "12.20250126.1"
+  config.vm.box = "bento/debian-13"
+  config.vm.box_version = "202510.26.0"
 
   config.vm.synced_folder ".", "/vagrant/shared", create: true, type: "virtualbox"
 
-  # Provisionning with shell on both server and worker
-  config.vm.provision "shell", path: "./scripts/installer.sh"
-
-  # Change the hostname with the login of someone
   config.vm.define "pioupiaS" do |server|
     server.vm.hostname = "pioupiaS"
     server.vm.network "private_network", ip: SERVICES['server'][:ip]
 
-    server.vm.provision "file", source: "./confs/k3s_server.service", destination: "/tmp/k3s.service"
-
-    server.vm.provision "shell", inline: <<-SHELL
-      sudo mv "/tmp/k3s.service" /etc/systemd/system/k3s.service
-
-      sudo -- bash -c 'echo "SERVER_IP=#{SERVICES['server'][:ip]}" >> /etc/systemd/system/k3s.service.env'
-      sudo systemctl start k3s
-      sudo systemctl enable k3s
-SHELL
+    server.vm.provision "shell",
+      path: "https://get.k3s.io",
+      env: {
+        "INSTALL_K3S_EXEC" => "server --cluster-init -i #{SERVICES['server'][:ip]}"
+      }
 
     server.vm.provision "shell", path: "./scripts/server_configuration.sh"
 
     server.vm.provider "virtualbox" do |vb|
-      vb.memory = 1024
-      vb.cpus = 1
+      vb.memory = 4069
+      vb.cpus = 2
       vb.name = "pioupiaS"
     end
   end
-  
-  config.vm.define "pioupiaSW" do |worker|
-    worker.vm.hostname = "pioupiaSW"
+
+  config.vm.define "pioupiaW" do |worker|
+    worker.vm.hostname = "pioupiaW"
     worker.vm.network "private_network", ip: SERVICES['worker'][:ip]
 
-    worker.vm.provision "file", source: "./confs/k3s_worker.service", destination: "/tmp/k3s.service"
-
-    worker.vm.provision "shell", inline: <<-SHELL
-      sudo mv "/tmp/k3s.service" /etc/systemd/system/k3s.service
-
-      sudo -- bash -c 'echo "SERVER_URI=https://#{SERVICES['server'][:ip]}:6443" >> /etc/systemd/system/k3s.service.env'
-      sudo -- bash -c 'echo "WORKER_IP=#{SERVICES['worker'][:ip]}" >> /etc/systemd/system/k3s.service.env'
-SHELL
-
-    worker.vm.provision "shell", path: "./scripts/worker_configuration.sh", env: { "SERVER_IP" => SERVICES['server'][:ip] }
+    worker.vm.provision "shell",
+      path: "./scripts/worker_configuration.sh",
+      env: {
+        "SERVER_IP" => SERVICES['server'][:ip],
+        "WORKER_IP" => SERVICES['worker'][:ip]
+      }
 
     worker.vm.provider "virtualbox" do |vb|
-      vb.memory = 1024
-      vb.cpus = 1
-      vb.name = "pioupiaSW"
+      vb.memory = 4069
+      vb.cpus = 2
+      vb.name = "pioupiaW"
     end
   end
 

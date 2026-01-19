@@ -9,4 +9,6 @@ for i in {1..60}; do
 done
 
 # Install k3s 
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent -i ${WORKER_IP}" K3S_URL="https://$SERVER_IP:6443" K3S_TOKEN="$(cat /vagrant/shared/token)" sh -
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent -i ${WORKER_IP} --write-kubeconfig-group vagrant" K3S_URL="https://$SERVER_IP:6443" K3S_TOKEN="$(cat /vagrant/shared/token)" sh -
+
+echo alias k=kubectl >> /home/vagrant/.bashrc

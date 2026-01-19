@@ -9,3 +9,5 @@ else
   echo "K3s token file not found. Please ensure K3s is installed and running." 1>&2
   exit 1
 fi
+
+echo alias k=kubectl >> /home/vagrant/.bashrc

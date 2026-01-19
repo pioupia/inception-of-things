@@ -7,3 +7,9 @@ if [ ! -f /usr/local/bin/helm ]; then
 	rm /tmp/helm-v3.9.0-linux-amd64.tar.gz
 	rm -rf /tmp/linux-amd64
 fi
+
+# Add the traefik charts
+helm repo add traefik https://traefik.github.io/charts
+helm repo update
+
+echo alias k=kubectl >> /home/vagrant/.bashrc

@@ -8,8 +8,5 @@ if [ ! -f /usr/local/bin/helm ]; then
 	rm -rf /tmp/linux-amd64
 fi
 
-# Add the traefik charts
-helm repo add traefik https://traefik.github.io/charts
-helm repo update
-
 echo alias k=kubectl >> /home/vagrant/.bashrc
+echo "192.168.56.110 app1.com app2.com app3.com" >> /etc/hosts

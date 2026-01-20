@@ -38,7 +38,12 @@ Vagrant.configure("2") do |config|
     server.vm.provision "file", source: "./confs/app-three.yaml", destination: "/dev/shm/app-three.yaml"
 
     server.vm.provision "shell", inline: <<-SHELL
-      kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.6/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
+      # Wait for traefik to be setup properly (CRDs setup issues)
+      until kubectl get crd ingressroutes.traefik.io >/dev/null 2>&1; do
+        sleep 2
+      done
+
+      sleep 2
 
       kubectl apply -f /dev/shm/app-one.yaml
       kubectl apply -f /dev/shm/app-two.yaml

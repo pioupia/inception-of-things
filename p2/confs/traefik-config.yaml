@@ -14,7 +14,3 @@ spec:
         enabled: true
         matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
         entryPoints: ["web"]
-    # Optional: If you want to see the logs to debug
-    logs:
-      general:
-        level: DEBUG

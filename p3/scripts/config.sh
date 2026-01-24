@@ -37,6 +37,12 @@ function change_tls()
 	kubectl apply -n argocd -f ./confs/argocd-ingress.yaml
 
 	kubectl delete pods -n argocd "$(kubectl get pods | grep argocd-server | awk '{ print $1 }')"
+
+	# Sleep 10s while k3d is goind to respawn all pods
+	sleep 10
+
+	# Wait for all pods at most 2min
+	kubectl wait --for=condition=Available pods --all -n argocd --timeout=120s
 }
 
 function expose_port()

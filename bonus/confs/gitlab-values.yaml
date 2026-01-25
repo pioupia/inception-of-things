@@ -1376,31 +1376,33 @@ gitlab:
       matchLabels:
         app: gitaly
   ## https://docs.gitlab.com/charts/charts/gitlab/migrations
-  #   migrations:
+  migrations:
+    annotations:
+      activeDeadlineSeconds: 3600 # One hour of migration
   #     enabled: false
   ## https://docs.gitlab.com/charts/charts/gitlab/webservice
   #   webservice:
   #     enabled: false
   ## https://docs.gitlab.com/charts/charts/gitlab/sidekiq
-    sidekiq:
-      enabled: true
-      concurrency: 10
+  sidekiq:
+    enabled: true
+    concurrency: 10
   ## https://docs.gitlab.com/charts/charts/gitlab/gitaly
-    gitaly:
-      shell.concurrency:
-        - rpc: "/gitaly.SmartHTTPService/PostReceivePack"
-          max_per_repo: 3
-        - rpc: "/gitaly.SSHService/SSHUploadPack"
-          max_per_repo: 3
-      cgroups.repositories.count: 2
-      cgroups.mountpoint: /sys/fs/cgroup
-      cgroups.hierarchyRoot: gitaly
-      cgroups.memoryBytes: 500000
-      cgroups.cpuShares: 512
-      extraEnv:
-        GITALY_COMMAND_SPAWN_MAX_PARALLEL: 2
-      securityContext:
-        fsGroupChangePolicy: "OnRootMismatch"
+  gitaly:
+    shell.concurrency:
+      - rpc: "/gitaly.SmartHTTPService/PostReceivePack"
+        max_per_repo: 3
+      - rpc: "/gitaly.SSHService/SSHUploadPack"
+        max_per_repo: 3
+    cgroups.repositories.count: 2
+    cgroups.mountpoint: /sys/fs/cgroup
+    cgroups.hierarchyRoot: gitaly
+    cgroups.memoryBytes: 500000
+    cgroups.cpuShares: 512
+    extraEnv:
+      GITALY_COMMAND_SPAWN_MAX_PARALLEL: 2
+    securityContext:
+      fsGroupChangePolicy: "OnRootMismatch"
   ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-shell
   #   gitlab-shell:
   #     enabled: false

@@ -23,6 +23,9 @@ function deploy_gitlab()
 
 function deploy_gitlab_on_argocd()
 {
+	# Ensure we're connected to argocd
+	argocd login --core
+
 	# Delete the old deployment
 	argocd app delete playground -y
 

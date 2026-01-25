@@ -17,7 +17,7 @@ function create_gitlab_repo()
 	GITLAB_HOST=gitlab.gitops.com glab repo create pioupia --public -s --defaultBranch=main
 
 	new_dir="$(mktemp -d)"
-	cd $new_dir
+	pushd $new_dir
 
 	git init
 	cp /root/inception-of-things/p3/confs/playground{,-service}.yaml .
@@ -31,6 +31,7 @@ function create_gitlab_repo()
 	git push origin main
 
 	rm -rf "$new_dir"
+	popd
 }
 
 
@@ -39,7 +40,10 @@ function create_gitlab_repo()
 # https://kubernetes.io/docs/reference/kubectl/jsonpath/
 function insert_root_cli_token()
 {
-	kubectl wait --for=condition=Ready pod -l app=toolbox -n gitlab --timeout=120s
+	# Waiting at most 5min + 5min + 20min (30min) to be alive and healthy
+	kubectl wait --for=condition=Ready pod -l app=toolbox -n gitlab --timeout=300s
+	kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=postgresql -n gitlab --timeout=300s
+	kubectl wait --for=condition=complete job -l app=migrations -n gitlab --timeout=1200s
 
 	node_name="$(kubectl get pods -n gitlab --selector=app=toolbox -o jsonpath='{.items[0].metadata.name}')"
 
@@ -48,6 +52,6 @@ function insert_root_cli_token()
 	# Take the date as second since EPOCH add 1 month in second take format
 	expires_at="$(date -d "@$(( $(date +%s) + 31 * 24 * 60 * 60 ))" -I)"
 
-	kubectl exec "$node_name" -it gitlab-rails -n gitlab -- gitlab-rails runner \
-	'User.admins.first.personal_access_tokens.create(name: "apitoken", token_digest: Gitlab::CryptoHelper.sha256("'"$random_token"'"), scopes: [:api,:write_repository], expires_at: "'"$expires_at"'").save!'
+	kubectl exec "$node_name" -it -n gitlab -- gitlab-rails runner \
+'User.admins.first.personal_access_tokens.create(name: "apitoken", token_digest: Gitlab::CryptoHelper.sha256("'"$random_token"'"), scopes: [:api,:write_repository], expires_at: "'"$expires_at"'").save!'
 }

@@ -6,7 +6,7 @@ install_helm
 
 deploy_gitlab
 
-kubectl rollout status deployment/gitlab-webservice-default -n gitlab --timeout=600s
+kubectl rollout status deployment/gitlab-webservice-default -n gitlab --timeout=720s
 
 initial_pass_gitlab="$(kubectl get secret gitlab-gitlab-initial-root-password -n gitlab -ojsonpath='{.data.password}' | base64 --decode ; echo)"
 

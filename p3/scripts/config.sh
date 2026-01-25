@@ -25,8 +25,8 @@ function change_tls()
 	# Install cert-manager
 	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.2/cert-manager.yaml
 	
-	# Wait for cert-manager to be available or wait at most 2min
-	kubectl wait --for=condition=Available deployment --all -n cert-manager --timeout=120s
+	# Wait for cert-manager to be available or wait at most 3min
+	kubectl wait --for=condition=Available deployment --all -n cert-manager --timeout=180s
 
 	kubectl apply -f ./confs/cert-manager.yaml
 
@@ -41,8 +41,8 @@ function change_tls()
 	# Sleep 10s while k3d is goind to respawn all pods
 	sleep 10
 
-	# Wait for all pods at most 2min
-	kubectl wait --for=condition=Available pods --all -n argocd --timeout=120s
+	# Wait for all pods at most 3min
+	kubectl wait --for=condition=Available pods --all -n argocd --timeout=180s
 }
 
 function expose_port()

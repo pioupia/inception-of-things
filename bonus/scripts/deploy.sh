@@ -21,22 +21,13 @@ function deploy_gitlab()
 	echo "127.0.0.1 gitlab.gitops.com" >> /etc/hosts
 }
 
-function update_argocd_dns()
-{
-	kubectl get configmap coredns -n kube-system -o yaml > configmap_coredns.yaml
-	head -4 configmap_coredns.yaml >> new_configmap_coredns.yaml
-	echo "        rewrite name gitlab.gitops.com gitlab-webservice-default.gitlab.svc.cluster.local" >> new_configmap_coredns.yaml
-	tail -n +5 configmap_coredns.yaml >> new_configmap_coredns.yaml
-
-	kubectl replace -n kube-system -f new_configmap_coredns.yaml
-
-	rm new_configmap_coredns.yaml configmap_coredns.yaml
-}
-
 function deploy_gitlab_on_argocd()
 {
+	# Delete the old deployment
+	argocd app delete playground -y
+
 	argocd app create playground \
-		--repo http://gitlab.gitops.com:8181/root/iot_app.git \
+		--repo http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/root/pioupia.git \
 		--path . \
 		--dest-server https://kubernetes.default.svc \
 		--dest-namespace dev

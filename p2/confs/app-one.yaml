@@ -45,6 +45,7 @@ spec:
   routes:
   - match: Host(`app1.com`) 
     kind: Rule
+    priority: 2
     services:
     - name: app-one
       port: 80

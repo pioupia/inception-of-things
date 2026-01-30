@@ -46,6 +46,7 @@ spec:
   routes:
   - match: Host(`app2.com`) 
     kind: Rule
+    priority: 3
     services:
     - name: app-two
       port: 80
